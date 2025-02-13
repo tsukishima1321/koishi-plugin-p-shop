@@ -115,7 +115,7 @@ class ShopService{
     let message = '当前可购买的道具列表：\n'
     for (const key in item) {
       if (item[key].favorability_limit > user.favorability) continue
-      message += `${item[key].id} - ${item[key].description} - 价格：${item[key].price}P\n`
+      message += `${item[key].id} \n ${item[key].description} \n 价格：${item[key].price}P\n\n`
     }
     return message
   }
@@ -129,7 +129,7 @@ class ShopService{
     let message = '当前背包中的道具列表：\n'
     for (const key in user.items) {
       const item = user.items[key]
-      message += `${item.id} - 数量：${item.count} - 价格：${item.price}P\n`
+      message += `${item.id} \n 数量：${item.count} - 价格：${item.price}P\n\n`
     }
     return message
   }
@@ -145,10 +145,13 @@ class ShopService{
     const item = items[itemId]
     if (user.p < item.price * amount) return 'P点不足，无法购买此物品'
     if (user.favorability < item.favorability_limit) return '好感度不足，无法购买此物品'
+    const userItemCount = user.items[itemId] ? user.items[itemId].count : 0
+    if (item.count < userItemCount + amount) return '超出此物品持有上限' + item.count
     user.p -= item.price * amount
     if (!user.items) user.items = {}
     if (!user.items[itemId]) user.items[itemId] = { id: itemId, count: 0, price: item.price }
     user.items[itemId].count += amount
+    user.items[itemId].price = item.price
     await this.db.updateUser(userId, user)
     return '购买成功'
   }
@@ -160,8 +163,13 @@ class ShopService{
     if (!user.items) return '背包为空'
     if (!user.items[itemId]) return '物品不存在'
     if (amount < 1) return '出售数量必须大于0'
+    const shopItems = await this.getItems()
     const item = user.items[itemId]
-    const price = item.price
+    let price = 0
+    if (shopItems[itemId])
+      price = shopItems[itemId].price
+    else
+      price = item.price
     if (item.count < amount) return '物品数量不足'
     user.p += price * amount
     item.count -= amount
@@ -202,6 +210,33 @@ class ShopService{
       await this.db.updateUser(userId, user)
       return `使用成功，已删除与${args[0]}相关的记忆`
     }
+    if (item.id === '空白符卡') {
+      let bonusLevel = ''
+      let bonusP = 0
+      let cardName = ''
+      const randomNum = random(1, 100)
+      if (randomNum > 0  && randomNum <= 1)   { bonusLevel = 'SSR'; bonusP = 199999; cardName = '极品符卡' }
+      if (randomNum > 1  && randomNum <= 6)   { bonusLevel = 'SR' ; bonusP = 59999 ; cardName = '上品符卡' }
+      if (randomNum > 6  && randomNum <= 31)  { bonusLevel = 'R'  ; bonusP = 14999 ; cardName = '普通符卡' }
+      if (randomNum > 31 && randomNum <= 85)  { bonusLevel = 'N'  ; bonusP = 4599  ; cardName = '下品符卡' }
+      if (randomNum > 85 && randomNum <= 98)  { bonusLevel = 'G'  ; bonusP = 1999  ; cardName = '劣质符卡' }
+      if (randomNum > 98 && randomNum <= 100) { bonusLevel = 'GG' ; bonusP = 9     ; cardName = '垃圾符卡' }
+      if (!user.items[cardName]) user.items[cardName] = { id: cardName, count: 0, price: bonusP }
+      user.items[cardName].count += 1
+      user.items['空白符卡'].count -= 1
+      if (user.items['空白符卡'].count <= 0) delete user.items['空白符卡']
+      await this.db.updateUser(userId, user)
+      return `使用成功，你获得了${bonusLevel}级符卡！`
+    }
+    if (item.id === '觉fumo') {
+      const status = user.items['觉fumo'].description ? user.items['觉fumo'].description : 'off'
+      if (status == 'on')
+        user.items['觉fumo'].description = 'off'
+      else
+        user.items['觉fumo'].description = 'on'
+      await this.db.updateUser(userId, user)
+      return '切换成功'
+    }
     return '无法使用此物品'
   }
 
@@ -211,8 +246,8 @@ class ShopService{
     const initShop = {
       '空白符卡': {
         id: '空白符卡',
-        count: 1,
-        price: 1000,
+        count: 99,
+        price: 10000,
         description: '能够承载灵力的卡片',
         favorability_limit: 0
       },
@@ -264,3 +299,8 @@ class ShopService{
     }
   }
 }
+
+function random(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
