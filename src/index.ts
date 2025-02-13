@@ -72,6 +72,8 @@ export function apply(ctx: Context, cfg: Config) {
     .action(async ({ session }, id, amount = 1) => {return await shop.sellItem(session.userId, id, amount) })
   ctx.command('p/p-use <id> [...args]').alias('使用道具')
     .action(async ({ session }, id, args) => {return await shop.useItem(session.userId, id, args ? args.split(' ') : []) })
+  ctx.command('p/p-item <id>').alias('查看道具')
+    .action(async ({ session }, id) => {return await shop.viewItem(session.userId, id) })
 }
 
 // 数据库服务
@@ -264,6 +266,20 @@ class ShopService{
       }
     }
     return '无法使用此物品'
+  }
+
+  // 查看道具
+  async viewItem(userId: string, itemId: string): Promise<string> {
+    const user = await this.db.getUser(userId)
+    if (!user) return '请先签到再查看道具哦'
+    if (!user.items) return '背包为空'
+    if (!user.items[itemId]) return '物品不存在'
+    const shopItems = await this.getItems()
+    const shopItem = shopItems[itemId]
+    const item = user.items[itemId]
+    const shopDescription = shopItem ? shopItem.description : '无'
+    const description = item.description ? item.description : '无'
+    return `物品：${item.id}\n数量：${item.count}\n价格：${item.price}P\n描述：${shopDescription}\n背包描述：${description}`
   }
 
   // 确保文件存在
