@@ -216,15 +216,16 @@ class ShopService{
       let bonusLevel = ''
       let bonusP = 0
       let cardName = ''
+      let description = ''
       const randomNum = random(1, 100)
-      if (randomNum > 0  && randomNum <= 1)   { bonusLevel = 'SSR'; bonusP = 199999; cardName = '极品符卡' }
-      if (randomNum > 1  && randomNum <= 6)   { bonusLevel = 'SR' ; bonusP = 59999 ; cardName = '上品符卡' }
-      if (randomNum > 6  && randomNum <= 31)  { bonusLevel = 'R'  ; bonusP = 14999 ; cardName = '普通符卡' }
-      if (randomNum > 31 && randomNum <= 85)  { bonusLevel = 'N'  ; bonusP = 4599  ; cardName = '下品符卡' }
-      if (randomNum > 85 && randomNum <= 98)  { bonusLevel = 'G'  ; bonusP = 1999  ; cardName = '劣质符卡' }
-      if (randomNum > 98 && randomNum <= 100) { bonusLevel = 'GG' ; bonusP = 9     ; cardName = '垃圾符卡' }
-      if (!user.items[cardName]) user.items[cardName] = { id: cardName, count: 0, price: bonusP }
-      user.items[cardName].count += 1
+      if (randomNum > 0  && randomNum <= 1)   { bonusLevel = 'SSR'; bonusP = 199999; cardName = '极品符卡' , description = '能够承载极大灵力' }
+      if (randomNum > 1  && randomNum <= 6)   { bonusLevel = 'SR' ; bonusP = 59999 ; cardName = '上品符卡' , description = '能够承载大量灵力' }
+      if (randomNum > 6  && randomNum <= 31)  { bonusLevel = 'R'  ; bonusP = 14999 ; cardName = '普通符卡' , description = '能够承载一定灵力' }
+      if (randomNum > 31 && randomNum <= 85)  { bonusLevel = 'N'  ; bonusP = 4599  ; cardName = '下品符卡' , description = '能够承载少量灵力' }
+      if (randomNum > 85 && randomNum <= 98)  { bonusLevel = 'G'  ; bonusP = 1999  ; cardName = '劣质符卡' , description = '能够承载微量灵力' }
+      if (randomNum > 98 && randomNum <= 100) { bonusLevel = 'GG' ; bonusP = 9     ; cardName = '垃圾符卡' , description = '是的，就是垃圾' }
+      if (!user.items[cardName]) user.items[cardName] = { id: cardName, count: 0, price: bonusP , description: description }
+      user.items[cardName] = { id: cardName, count: user.items[cardName].count + 1, price: bonusP , description: description }
       user.items['空白符卡'].count -= 1
       if (user.items['空白符卡'].count <= 0) delete user.items['空白符卡']
       await this.db.updateUser(userId, user)
@@ -345,4 +346,3 @@ class ShopService{
 function random(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
-
