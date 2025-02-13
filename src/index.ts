@@ -266,6 +266,13 @@ class ShopService{
         return '使用成功，已降低好感度'
       }
     }
+    if (item.id === '订婚戒指') {
+      const status = user.items['订婚戒指'].description ? user.items['订婚戒指'].description : '未使用'
+      if (status == '已使用') return '你已经佩戴了订婚戒指，不许反悔哦'
+      user.items['订婚戒指'].description = '已使用'
+      await this.db.updateUser(userId, user)
+      return '佩戴成功，永远不许反悔哦'
+    }
     return '无法使用此物品'
   }
 
