@@ -237,6 +237,32 @@ class ShopService{
       await this.db.updateUser(userId, user)
       return '切换成功'
     }
+    if (item.id === '猫耳发饰') {
+      const status = user.items['猫耳发饰'].description ? user.items['猫耳发饰'].description : 'off'
+      if (status == 'on')
+        user.items['猫耳发饰'].description = 'off'
+      else
+        user.items['猫耳发饰'].description = 'on'
+      await this.db.updateUser(userId, user)
+      return '切换成功'
+    }
+    if (item.id === '心碎魔药') {
+      const favorability = user.favorability
+      const memory = user.items['心碎魔药'].favorability_limit ? user.items['心碎魔药'].favorability_limit : favorability
+      if (favorability <= -9999) {
+        user.favorability = memory
+        item.count -= 1
+        if (item.count === 0) delete user.items[itemId]
+        await this.db.updateUser(userId, user)
+        return '使用成功，已恢复好感度'
+      }
+      else {
+        user.favorability = -99999
+        item.favorability_limit = memory
+        await this.db.updateUser(userId, user)
+        return '使用成功，已降低好感度'
+      }
+    }
     return '无法使用此物品'
   }
 
