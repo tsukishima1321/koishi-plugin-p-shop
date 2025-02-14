@@ -32,8 +32,9 @@ export interface ShopItem {
   price: number
   maxStack: number
   favorability: number
-  buy?: (user: UserData, amount: number, targetItem: ShopItem, ctx: Context) => Promise<string | void>
-  sell?: (user: UserData, amount: number, shopItem: ShopItem, ctx: Context) => Promise<string | void>
+  metadata?: Record<string, any>
+  buy?: (user: UserData, targetItem: ShopItem, amount: number, ctx: Context) => Promise<string | void>
+  sell?: (user: UserData, price: number, amount: number, ctx: Context) => Promise<string | void>
   use?: (ItemUsectx: ItemUseContext, ctx: Context) => Promise<string | void>
 }
 

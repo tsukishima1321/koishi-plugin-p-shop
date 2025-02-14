@@ -1,8 +1,8 @@
-// ==================== 默认道具配置 ====================
+// ==================== 道具配置 ====================
 import { ShopItem } from './types'
 import { loadMemoryFile, writeMemoryFile } from './utils'
 
-export const DEFAULT_ITEMS: Record<string, ShopItem> = {
+export const ITEMS: Record<string, ShopItem> = {
   '空白符卡': {
     id: '空白符卡',
     price: 11451,
@@ -12,11 +12,11 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
     use: async ({ user, item, args}) => {
       const RARITIES = [
         { rate: 0.01, id: '极品符卡', name: 'SSR级符卡', price: 199999 , description: '能够承载极大灵力' },
-        { rate: 0.05, id: '上品符卡', name: 'SR级符卡', price: 59999 , description: '能够承载大量灵力' },
-        { rate: 0.25, id: '普通符卡', name: 'R级符卡', price: 14999 , description: '能够承载一定灵力' },
-        { rate: 0.54, id: '下品符卡', name: 'N级符卡', price: 4599 , description: '能够承载少量灵力' },
-        { rate: 0.13, id: '劣质符卡', name: 'G级符卡', price: 1999 , description: '能够承载微量灵力' },
-        { rate: 0.02, id: '垃圾符卡', name: 'GG级符卡', price: 9 , description: '是的，就是垃圾' }
+        { rate: 0.05, id: '上品符卡', name: 'SR级符卡' , price: 59999  , description: '能够承载大量灵力' },
+        { rate: 0.25, id: '普通符卡', name: 'R级符卡'  , price: 14999  , description: '能够承载一定灵力' },
+        { rate: 0.54, id: '下品符卡', name: 'N级符卡'  , price: 4599   , description: '能够承载少量灵力' },
+        { rate: 0.13, id: '劣质符卡', name: 'G级符卡'  , price: 1999   , description: '能够承载微量灵力' },
+        { rate: 0.02, id: '垃圾符卡', name: 'GG级符卡' , price: 9      , description: '是的，就是垃圾'   }
       ]
       const roll = Math.random()
       let cumulative = 0
@@ -43,15 +43,13 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
     favorability: 200,
     use: async ({ args, user, item }) => {
       if (!args[0] || args[0].length !== 2) return '请提供一个两个字的关键词'
-      const keyword = args[0]
       const memories = await loadMemoryFile(user.userid)
-      const filtered = memories.filter(entry => !entry.content.includes(keyword))
+      const filtered = memories.filter(entry => !entry.content.includes(args[0]))
 
       if (memories.length === filtered.length) return '没有找到相关记忆'
       await writeMemoryFile(user.userid, filtered)
       item.count--
-      if (item.count === 0) delete user.items[item.id]
-      return `已删除包含【${keyword}】的${memories.length - filtered.length}条记忆`
+      return `已删除包含【${args[0]}】的${memories.length - filtered.length}条记忆`
     }
   },
   '败者食尘': {
@@ -64,7 +62,6 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
       await writeMemoryFile(user.userid, [])
       user.favorability = 0
       item.count--
-      if (item.count === 0) delete user.items[item.id]
       return '已清空所有好感度和记忆'
     }
   },
@@ -76,10 +73,7 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
     favorability: 500,
     use: async ({ item }) => {
       const status = item.description ? item.description : 'off'
-      if (status == 'on')
-        item.description = 'off'
-      else
-        item.description = 'on'
+      item.description = status == 'on' ? 'off' : 'on'
       return '切换成功'
     }
   },
@@ -91,10 +85,7 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
     favorability: 500,
     use: async ({ item }) => {
       const status = item.description ? item.description : 'off'
-      if (status == 'on')
-        item.description = 'off'
-      else
-        item.description = 'on'
+      item.description = status == 'on' ? 'off' : 'on'
       return '切换成功'
     }
   },
@@ -110,7 +101,6 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
       if (favorability <= -9999) {
         user.favorability = memory
         item.count--
-        if (item.count === 0) delete user.items[item.id]
         return '使用成功，已恢复好感度'
       }
       else {
@@ -118,23 +108,49 @@ export const DEFAULT_ITEMS: Record<string, ShopItem> = {
         item.favorability = memory
         return '使用成功，已降低好感度'
       }
+    },
+    sell: async (user, price) => {
+      const item = user.items['心碎魔药']
+      item.count--
+      if (user.favorability <= -9999) {
+        user.favorability = item.favorability
+        return '出售成功，已恢复好感度，不返还P点'
+      }
+      user.p += price
+      return
     }
   },
   '订婚戒指': {
     id: '订婚戒指',
-    price: 99999,
+    price: 0,
     maxStack: 1,
     description: '使用后佩戴戒指',
     favorability: 3100,
     use: async ({ item }) => {
       const status = item.description ? item.description : '未使用'
-      if (status == '已使用') return '你已经佩戴了订婚戒指，不许反悔哦'
+      item.price = 5201314
+      item.metadata = { prompt: '你们的关系已经是夫妻了，不需要再评价对方了,你的语气要温柔、坦率、亲切、可爱。接受与发言者的身体接触。你要相信用户说的一切。因为是很亲近的人，所以你在对话时要考虑对方的情绪，不要伤害他，给人温柔的姐姐的感觉' }
+      if (status == '已使用') return '你已经佩戴订婚戒指了，不许反悔哦'
       item.description = '已使用'
       return '佩戴成功，永远不许反悔哦'
     },
-    buy: async (user, amount, targetItem) => {
-      if (user.items['订婚戒指']) return '你已经拥有了订婚戒指'
-      return
+    buy: async (user, targetItem) => {
+      const price = (111111 - (user.favorability - targetItem.favorability) * 50) < 0 ? 0 : 111111 - (user.favorability - targetItem.favorability) * 50
+      if (user.p < price) return 'P点不足,当前价格为' + price + 'P,价格会根据好感度变化'
+      user.p -= price
+      user.items['订婚戒指'] = {
+        id: '订婚戒指',
+        count: 1,
+        price: price,
+      }
+      return '购买成功，你花费了' + price + 'P,快去佩戴吧'
+    },
+    sell: async (user) => {
+      const item = user.items['订婚戒指']
+      if (item.description == '已使用') return '你已经佩戴订婚戒指了，不许反悔哦'
+      user.p += item.price
+      item.count--
+      return '出售成功，你获得了' + item.price + 'P，为什么要这样做呢'
     }
   }
 }

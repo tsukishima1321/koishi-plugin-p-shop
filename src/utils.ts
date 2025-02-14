@@ -1,6 +1,6 @@
 // ==================== 辅助函数 ====================
-import { UserItem, MemoryEntry } from './types'
-import { DEFAULT_ITEMS } from './items'
+import { UserItem, MemoryEntry, UserData } from './types'
+import { ITEMS } from './items'
 import fs from 'fs'
 import path from 'path'
 
@@ -11,7 +11,7 @@ export function random(min: number, max: number): number {
 // 确保文件存在
 export async function ensureShopFile(filePath: string): Promise<void> {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
-  const initShop = { ...DEFAULT_ITEMS }
+  const initShop = { ...ITEMS }
   const initShopString = JSON.stringify(initShop, null, 2)
   if (!fs.existsSync(filePath)) { fs.writeFileSync(filePath, initShopString, 'utf-8') }
 }
