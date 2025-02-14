@@ -1,5 +1,5 @@
 // ==================== 辅助函数 ====================
-import { UserItem, MemoryEntry, UserData } from './types'
+import { MemoryEntry, ShopItem } from './types'
 import { ITEMS } from './items'
 import fs from 'fs'
 import path from 'path'
@@ -17,11 +17,11 @@ export async function ensureShopFile(filePath: string): Promise<void> {
 }
 
 // 加载文件
-export async function loadShopFile(filePath: string): Promise<Record<string, UserItem>> {
+export async function loadShopFile(filePath: string): Promise<Record<string, Partial<ShopItem>>> {
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   } catch {
-    return {}
+    return {};
   }
 }
 

@@ -9,14 +9,14 @@ export const ITEMS: Record<string, ShopItem> = {
     maxStack: 99,
     description: '能够承载灵力的卡片\n能够随机生成各种等级的符卡(抽卡)',
     favorability: 0,
-    use: async ({ user, item, args}) => {
+    use: async ({ user, item }) => {
       const RARITIES = [
-        { rate: 0.01, id: '极品符卡', name: 'SSR级符卡', price: 199999 , description: '能够承载极大灵力' },
-        { rate: 0.05, id: '上品符卡', name: 'SR级符卡' , price: 59999  , description: '能够承载大量灵力' },
-        { rate: 0.25, id: '普通符卡', name: 'R级符卡'  , price: 14999  , description: '能够承载一定灵力' },
-        { rate: 0.54, id: '下品符卡', name: 'N级符卡'  , price: 4599   , description: '能够承载少量灵力' },
-        { rate: 0.13, id: '劣质符卡', name: 'G级符卡'  , price: 1999   , description: '能够承载微量灵力' },
-        { rate: 0.02, id: '垃圾符卡', name: 'GG级符卡' , price: 9      , description: '是的，就是垃圾'   }
+        { rate: 0.01, id: '极品符卡', level: 'SSR', price: 199999 , description: '能够承载极大灵力' },
+        { rate: 0.05, id: '上品符卡', level: 'SR' , price: 59999  , description: '能够承载大量灵力' },
+        { rate: 0.25, id: '普通符卡', level: 'R'  , price: 14999  , description: '能够承载一定灵力' },
+        { rate: 0.54, id: '下品符卡', level: 'N'  , price: 4599   , description: '能够承载少量灵力' },
+        { rate: 0.13, id: '劣质符卡', level: 'G'  , price: 1999   , description: '能够承载微量灵力' },
+        { rate: 0.02, id: '垃圾符卡', level: 'GG' , price: 9      , description: '是的，就是垃圾'   }
       ]
       const roll = Math.random()
       let cumulative = 0
@@ -32,7 +32,7 @@ export const ITEMS: Record<string, ShopItem> = {
       }
       item.count--
       if (item.count <= 0) delete user.items[item.id]
-      return `使用成功，你获得了【${result.name}】！`
+      return `使用成功，你获得了【${result.level}】！`
     }
   },
   '消忆药水': {
@@ -74,7 +74,7 @@ export const ITEMS: Record<string, ShopItem> = {
     use: async ({ item }) => {
       const status = item.description ? item.description : 'off'
       item.description = status == 'on' ? 'off' : 'on'
-      return '切换成功'
+      return status == 'on' ? '已关闭觉fumo' : '已开启觉fumo'
     }
   },
   '猫耳发饰': {
@@ -86,7 +86,7 @@ export const ITEMS: Record<string, ShopItem> = {
     use: async ({ item }) => {
       const status = item.description ? item.description : 'off'
       item.description = status == 'on' ? 'off' : 'on'
-      return '切换成功'
+      return status == 'on' ? '已卸下猫耳发饰' : '已佩戴猫耳发饰'
     }
   },
   '心碎魔药': {
