@@ -1,29 +1,30 @@
-import { Context } from 'koishi'
-import { Config, UserData, ShopItem } from './types'
+import { Context, Logger } from 'koishi'
+import { UserData, ShopItem } from './types'
+import { Config } from '.'
 import { DEFAULT_ITEMS } from './items'
 import { DatabaseService } from './database'
 import { ensureShopFile, loadShopFile } from './utils'
 import * as fs from 'fs'
 import * as path from 'path'
+import { log } from 'console'
 
+const logger = new Logger('p-shop')
 // 商店服务
 export class ShopService{
   private db: DatabaseService
   private items: Record<string, ShopItem>
-  private dataDir: string
 
   constructor(ctx: Context, config: Config) {
     this.db = new DatabaseService(ctx)
-    this.dataDir = path.resolve(config.dataDir)
-    ensureShopFile(path.resolve(this.dataDir, 'p-shop.json'))
-    this.loadItems()
+    ensureShopFile(path.resolve(config.dataDir, 'p-shop.json'))
+    this.loadItems(config.dataDir)
   }
 
   // 加载道具配置
-  private async loadItems() {
+  private async loadItems(dataDir: string): Promise<void> {
     // 合并默认配置和JSON配置
     this.items = { ...DEFAULT_ITEMS }
-    const customPath = path.join(this.dataDir, 'p-shop.json')
+    const customPath = path.join(dataDir, 'p-shop.json')
 
     if (fs.existsSync(customPath)) {
       const customItems: Record<string, Partial<ShopItem>> = await loadShopFile(customPath)
@@ -97,8 +98,8 @@ export class ShopService{
     if (!user.items) user.items = {}
     if (!user.items[itemId]) user.items[itemId] = { id: itemId, count: 0, price: targetItem.price}
     let message: string | void
-    if (targetItem.onBuy) {
-      message = await targetItem.onBuy(user, amount, targetItem, ctx)
+    if (targetItem.buy) {
+      message = await targetItem.buy(user, amount, targetItem, ctx)
     } else {
       user.items[itemId].count += amount
       user.p -= targetItem.price * amount
@@ -122,8 +123,8 @@ export class ShopService{
     const shopItem = this.items[itemId] ? this.items[itemId] : null
     if (userItem.count < amount) return '物品数量不足'
     let message: string | void
-    if (shopItem && shopItem.onSell) {
-      message = await shopItem.onSell(user, amount, shopItem, ctx)
+    if (shopItem && shopItem.sell) {
+      message = await shopItem.sell(user, amount, shopItem, ctx)
     } else {
       let price = shopItem ? shopItem.price : userItem.price
       user.p += price * amount
@@ -147,12 +148,14 @@ export class ShopService{
     if (!this.items[itemId]) return '无法使用此物品'
     const userItem = user.items[itemId]
     const shopItem = this.items[itemId]
-    if (shopItem.onUse) {
-      const message = await shopItem.onUse({ user, item: userItem, args }, ctx)
+    try {
+      const message = await shopItem.use({ user, item: userItem, args}, ctx)
       this.db.updateUser(user)
       if (message) return message
+    } catch (error) {
+      logger.warn('错误；', error)
+      return '使用失败'
     }
-    return '无法使用此物品'
   }
 
   // 查看道具
@@ -165,6 +168,6 @@ export class ShopService{
     const item = user.items[itemId]
     const shopDescription = shopItem ? shopItem.description : '无'
     const description = item.description ? item.description : '无'
-    return `物品：${item.id}\n数量：${item.count}\n价格：${item.price}P\n描述：${shopDescription}\n背包描述：${description}\n}`
+    return `物品：${item.id}\n数量：${item.count}\n价格：${item.price}P\n描述：${shopDescription}\n背包描述：${description}\n`
   }
 }

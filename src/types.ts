@@ -1,18 +1,10 @@
-import { Schema, Context } from 'koishi'
+import { Context } from 'koishi'
 
 //记忆配置
 export interface MemoryEntry {
   role: string
   content: string
 }
-export interface Config {
-  dataDir: string
-}
-
-export const Config: Schema<Config> = Schema.object({
-  dataDir: Schema.string().default("./data").description("数据目录"),
-})
-
 export interface UserData {
   id: number
   userid: string
@@ -40,9 +32,9 @@ export interface ShopItem {
   price: number
   maxStack: number
   favorability: number
-  onBuy?: (user: UserData, amount: number, targetItem: ShopItem, ctx: Context) => Promise<string | void>
-  onSell?: (user: UserData, amount: number, shopItem: ShopItem, ctx: Context) => Promise<string | void>
-  onUse?: (ItemUsectx: ItemUseContext, ctx: Context) => Promise<string | void>
+  buy?: (user: UserData, amount: number, targetItem: ShopItem, ctx: Context) => Promise<string | void>
+  sell?: (user: UserData, amount: number, shopItem: ShopItem, ctx: Context) => Promise<string | void>
+  use?: (ItemUsectx: ItemUseContext, ctx: Context) => Promise<string | void>
 }
 
 export interface ItemUseContext {

@@ -1,5 +1,4 @@
-import { Context } from 'koishi'
-import { Config } from './types'
+import { Context, Schema } from 'koishi'
 import { ShopService } from './shop';
 export const name = 'p-shop'
 
@@ -12,6 +11,15 @@ export const inject = {
   required: ['database'],
   optional: [],
 }
+
+export interface Config {
+  dataDir: string
+}
+
+export const Config: Schema<Config> = Schema.object({
+  dataDir: Schema.string().default("./data").description("数据目录"),
+})
+
 
 export function apply(ctx: Context, cfg: Config) {
   const shop = new ShopService(ctx, cfg)
