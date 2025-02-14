@@ -23,8 +23,8 @@ export const Config: Schema<Config> = Schema.object({
 
 export function apply(ctx: Context, cfg: Config) {
   const shop = new ShopService(ctx, cfg)
-  ctx.command('p/p-shop').alias('查看商店')
-    .action(async ({ session }) => {return await shop.viewShop(session.userId) })
+  ctx.command('p/p-shop <id>').alias('查看商店')
+    .action(async ({ session }, id = '') => {return await shop.viewShop(session.userId, id) })
   ctx.command('p/p-bag').alias('查看背包')
     .action(async ({ session }) => {return await shop.viewBag(session.userId) })
   ctx.command('p/p-buy <id> [amount:number]').alias('购买道具')

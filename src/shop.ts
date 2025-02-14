@@ -47,19 +47,24 @@ export class ShopService{
   // 获取商店商品列表
   private getShopItems(user: UserData):ShopItem[] {
     return Object.values(this.items)
-      .filter(item => item.favorability <= user.favorability)
+      .filter(item => item.favorability <= user.favorability && (!user.items[item.id] || item.maxStack > user.items[item.id]?.count))
       .map((ShopItem) => (ShopItem))
   }
 
   // 查看商店
-  public async viewShop(userId: string): Promise<string> {
+  public async viewShop(userId: string, itemId: string = ''): Promise<string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再查看商店哦'
-    const item = this.getShopItems(user)
-    if (!item) return '商店为空'
+    const items = this.getShopItems(user)
+    if (!items) return '商店为空'
+    if (itemId) {
+      const targetItem = items.find((item) => item.id === itemId)
+      if (!targetItem) return '物品不存在'
+      return `物品：${targetItem.id}\n价格：${targetItem.price}P\n描述：${targetItem.description}\n持有上限：${targetItem.maxStack}`
+    }
     let message = '当前可购买的道具列表：\n'
-    for (const key in item) {
-      message += `${item[key].id} \n ${item[key].description} \n 价格：${item[key].price}P\n`
+    for (const key in items) {
+      message += `${items[key].id} - 价格：${items[key].price}P\n`
     }
     return message
   }
@@ -146,7 +151,7 @@ export class ShopService{
     if (!user) return '请先签到再使用物品哦'
     if (!user.items) return '背包为空'
     if (!user.items[itemId]) return '背包中不存在此物品'
-    if (!this.items[itemId]) return '无法使用此物品'
+    if (!this.items[itemId]?.use) return '无法使用此物品'
     const userItem = user.items[itemId]
     const shopItem = this.items[itemId]
     try {
