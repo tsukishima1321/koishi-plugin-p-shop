@@ -99,4 +99,4 @@ data/
 ---
 
 ## 问题反馈
-如有问题请提交 Issue 至 [GitHub仓库](https://github.com/your-repo-url)
+如有问题请提交 Issue 至 [GitHub仓库](https://github.com/gfjdh/koishi-plugin-p-shop)
