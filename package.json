@@ -1,14 +1,28 @@
 {
   "name": "koishi-plugin-p-shop",
-  "description": "p点商店和礼物系统",
+  "description": "适用于 Satori 适配器的p点商店，satori-ai和p-qiandao的拓展功能",
   "version": "0.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist"
+    "README.md"
   ],
   "license": "MIT",
+  "author": {
+    "name": "清水尚辉",
+    "email": "2556123498@qq.com",
+    "url": "https://gfjdh.cn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gfjdh/koishi-plugin-p-shop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gfjdh/koishi-plugin-p-shop/issues"
+  },
+  "homepage": "https://github.com/gfjdh/koishi-plugin-p-shop#readme",
   "keywords": [
     "chatbot",
     "koishi",
