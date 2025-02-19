@@ -1,20 +1,24 @@
 import { Context, Logger } from 'koishi'
-import { UserData, ShopItem } from './types'
+import { UserData, ShopItem, UserItem } from './types'
 import { Config } from '.'
 import { ITEMS } from './items'
 import { DatabaseService } from './database'
 import { ensureShopFile, loadShopFile } from './utils'
+import Puppeteer, { } from 'koishi-plugin-puppeteer'
+import { renderViewShop, renderViewItem, renderViewBag } from './renderer'
 import * as fs from 'fs'
 import * as path from 'path'
 
 const logger = new Logger('p-shop')
 // 商店服务
-export class ShopService{
+export class ShopService {
   private db: DatabaseService
   private items: Record<string, ShopItem>
+  private puppeteer: Puppeteer | null
 
   constructor(ctx: Context, config: Config) {
     this.db = new DatabaseService(ctx)
+    this.puppeteer = ctx.puppeteer ? ctx.puppeteer : null
     ensureShopFile(path.resolve(config.dataDir, 'p-shop.json'))
     this.loadItems(config.dataDir)
   }
@@ -45,7 +49,7 @@ export class ShopService{
   }
 
   // 获取商店商品列表
-  private getShopItems(user: UserData):ShopItem[] {
+  private getShopItems(user: UserData): ShopItem[] {
     return Object.values(this.items)
       .filter(item => item.favorability <= user.favorability && (!user.items[item.id] || item.maxStack > user.items[item.id]?.count))
       .map((ShopItem) => (ShopItem))
@@ -60,13 +64,26 @@ export class ShopService{
     if (itemId) {
       const targetItem = items.find((item) => item.id === itemId)
       if (!targetItem) return '物品不存在'
+      if (this.puppeteer) {
+        try {
+          return await renderViewShop(this.puppeteer, items, targetItem)
+        } catch (error) {
+          logger.warn('Puppeteer错误；', error)
+        }
+      }
       return `物品：${targetItem.id}\n价格：${targetItem.price}P\n描述：${targetItem.description}\n持有上限：${targetItem.maxStack}`
+    } else {
+      try {
+        return await renderViewShop(this.puppeteer, items)
+      } catch (error) {
+        logger.warn('Puppeteer错误；', error)
+        let message = '当前可购买的道具列表：\n'
+        for (const key in items) {
+          message += `${items[key].id} - 价格：${items[key].price}P\n`
+        }
+        return message
+      }
     }
-    let message = '当前可购买的道具列表：\n'
-    for (const key in items) {
-      message += `${items[key].id} - 价格：${items[key].price}P\n`
-    }
-    return message
   }
 
   // 查看背包
@@ -75,6 +92,17 @@ export class ShopService{
     if (!user) return '请先签到再查看背包哦'
     if (!user.items || Object.keys(user.items).length === 0) return '你的背包为空'
 
+    if (this.puppeteer) {
+      try {
+        let items: UserItem[] = []
+        for (const key in user.items) {
+          items.push(user.items[key])
+        }
+        return await renderViewBag(this.puppeteer, items);
+      } catch (error) {
+        logger.warn('Puppeteer错误；', error)
+      }
+    }
     let message = '当前背包中的道具列表：\n'
     for (const key in user.items) {
       const item = user.items[key]
@@ -100,7 +128,7 @@ export class ShopService{
     if (targetItem.maxStack < userItemCount + amount) return '超出此物品持有上限:' + targetItem.maxStack
 
     if (!user.items) user.items = {}
-    if (!user.items[itemId]) user.items[itemId] = { id: itemId, count: 0, price: targetItem.price}
+    if (!user.items[itemId]) user.items[itemId] = { id: itemId, count: 0, price: targetItem.price }
 
     let message: string | void
     if (targetItem.buy) {
@@ -155,7 +183,7 @@ export class ShopService{
     const userItem = user.items[itemId]
     const shopItem = this.items[itemId]
     try {
-      const message = await shopItem.use({ user, item: userItem, args}, ctx)
+      const message = await shopItem.use({ user, item: userItem, args }, ctx)
       if (userItem.count === 0) delete user.items[itemId]
       this.db.updateUser(user)
       if (message) return message
@@ -171,6 +199,14 @@ export class ShopService{
     if (!user) return '请先签到再查看道具哦'
     if (!user.items) return '背包为空'
     if (!user.items[itemId]) return '物品不存在'
+    if (this.puppeteer) {
+      try {
+        const shopItem = this.items[itemId]
+        return await renderViewItem(this.puppeteer, user.items[itemId], shopItem ? shopItem.description : '')
+      } catch (error) {
+        logger.warn('Puppeteer错误；', error)
+      }
+    }
     const shopItem = this.items[itemId]
     const item = user.items[itemId]
     const shopDescription = shopItem ? shopItem.description : '无'

@@ -8,6 +8,8 @@ yarn-debug.log
 yarn-error.log
 tsconfig.tsbuildinfo
 
+templates
+
 .eslintcache
 .DS_Store
 .idea

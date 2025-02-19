@@ -9,7 +9,7 @@ export const usage = `
 
 export const inject = {
   required: ['database'],
-  optional: [],
+  optional: ['puppeteer'],
 }
 
 export interface Config {

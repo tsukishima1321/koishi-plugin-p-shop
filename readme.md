@@ -21,6 +21,7 @@
 - 已安装 Koishi 框架
 - 启用 `database` 数据库服务
 - 已使用 [satori-ai](https://github.com/gfjdh/koishi-plugin-satori-ai)及[p-qiandao](https://github.com/gfjdh/koishi-plugin-p-qiandao) 插件
+- **可选：** 启用 `puppeteer` 服务渲染商店消息
 
 ### 安装插件
 ```bash
