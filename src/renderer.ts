@@ -172,7 +172,6 @@ body {
     text-align: center;
 }
 </style>`
-    console.log(html)
     return await pup.render(html)
 }
 
