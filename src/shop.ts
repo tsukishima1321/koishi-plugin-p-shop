@@ -128,16 +128,18 @@ export class ShopService {
     if (targetItem.maxStack < userItemCount + amount) return '超出此物品持有上限:' + targetItem.maxStack
 
     if (!user.items) user.items = {}
-    if (!user.items[itemId]) user.items[itemId] = { id: itemId, count: 0, price: targetItem.price }
 
     let message: string | void
     if (targetItem.buy) {
       message = await targetItem.buy(user, targetItem, amount, ctx)
     } else {
+      if (!user.items[itemId])
+        user.items[itemId] = { id: itemId, count: 0, price: targetItem.price }
       user.items[itemId].count += amount
       user.p -= targetItem.price * amount
     }
     this.db.updateUser(user)
+    
     if (message) {
       return message
     } else {

@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-p-shop",
   "description": "适用于 Satori 适配器的p点商店，satori-ai和p-qiandao的拓展功能",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "types": "lib/index.d.ts",
