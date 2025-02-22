@@ -24,15 +24,30 @@ export const Config: Schema<Config> = Schema.object({
 export function apply(ctx: Context, cfg: Config) {
   const shop = new ShopService(ctx, cfg)
   ctx.command('p/p-shop <id>').alias('查看商店')
-    .action(async ({ session }, id = '') => {return await shop.viewShop(session.userId, id) })
+    .action(async ({ session }, id = '') => {
+      if (ctx.puppeteer && !shop.puppeteerReady()) {
+        shop.setPuppeteer(ctx.puppeteer)
+      }
+      return await shop.viewShop(session.userId, id)
+    })
   ctx.command('p/p-bag').alias('查看背包')
-    .action(async ({ session }) => {return await shop.viewBag(session.userId) })
+    .action(async ({ session }) => {
+      if (ctx.puppeteer && !shop.puppeteerReady()) {
+        shop.setPuppeteer(ctx.puppeteer)
+      }
+      return await shop.viewBag(session.userId)
+    })
   ctx.command('p/p-buy <id> [amount:number]').alias('购买道具')
-    .action(async ({ session }, id, amount = 1) => {return await shop.buyItem(ctx, session.userId, id, amount) })
+    .action(async ({ session }, id, amount = 1) => { return await shop.buyItem(ctx, session.userId, id, amount) })
   ctx.command('p/p-sell <id> [amount:number]').alias('出售道具')
-    .action(async ({ session }, id, amount = 1) => {return await shop.sellItem(ctx, session.userId, id, amount) })
+    .action(async ({ session }, id, amount = 1) => { return await shop.sellItem(ctx, session.userId, id, amount) })
   ctx.command('p/p-use <id> [...args]').alias('使用道具')
-    .action(async ({ session }, id, args) => {return await shop.useItem(ctx, session.userId, id, args ? args.split(' ') : []) })
+    .action(async ({ session }, id, args) => { return await shop.useItem(ctx, session.userId, id, args ? args.split(' ') : []) })
   ctx.command('p/p-item <id>').alias('查看道具')
-    .action(async ({ session }, id) => {return await shop.viewItem(session.userId, id) })
+    .action(async ({ session }, id) => {
+      if (ctx.puppeteer && !shop.puppeteerReady()) {
+        shop.setPuppeteer(ctx.puppeteer)
+      }
+      return await shop.viewItem(session.userId, id)
+    })
 }
