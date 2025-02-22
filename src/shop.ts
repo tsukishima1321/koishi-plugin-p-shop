@@ -23,6 +23,13 @@ export class ShopService {
     this.loadItems(config.dataDir)
   }
 
+  public setPuppeteer(puppeteer: Puppeteer): void {
+    this.puppeteer = puppeteer
+  }
+  public puppeteerReady(): boolean {
+    return !!this.puppeteer
+  }
+
   // 加载道具配置
   private async loadItems(dataDir: string): Promise<void> {
     // 合并默认配置和JSON配置
