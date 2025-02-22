@@ -1,6 +1,7 @@
 import Puppeteer, { } from 'koishi-plugin-puppeteer'
 import { ShopItem, UserItem } from './types'
 import path from 'path'
+import fs from 'fs'
 
 // 生成资源路径
 const fontGenJyuuGothic = path.resolve(__dirname, 'renderer/fonts/GenJyuuGothic-Normal-2.ttf').split('\\').join('/')
@@ -16,7 +17,10 @@ const imgDialogue = path.resolve(__dirname, 'renderer/dialogue.png').split('\\')
 
 export const renderViewShop = async (pup: Puppeteer, items: ShopItem[], targetItem?: ShopItem): Promise<string> => {
     const itemsHtml = items.map((item) => {
-        const icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        if (!fs.existsSync(icon)) {
+            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+        }
         const name = item.id
         const price = item.price
         const itemHtml = `
@@ -177,7 +181,10 @@ body {
 
 export const renderViewBag = async (pup: Puppeteer, items: UserItem[]): Promise<string> => {
     let itemsHTML = items.map((item) => {
-        const icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        if (!fs.existsSync(icon)) {
+            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+        }
         const itemName = item.id
         const price = item.price
         const count = item.count
@@ -304,7 +311,10 @@ img {
 }
 
 export const renderViewItem = async (pup: Puppeteer, item: UserItem, shopDes: string): Promise<string> => {
-    const icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+    let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        if (!fs.existsSync(icon)) {
+            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+        }
     const itemName = item.id
     const price = item.price
     let description = shopDes.replace('\n', '<BR>')
