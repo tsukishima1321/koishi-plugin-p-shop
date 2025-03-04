@@ -1,0 +1,180 @@
+<!-- 本文件为样式参考，不参与插件运行 -->
+<!-- 实际代码在renderer.ts中 -->
+<html>
+    <body>
+        <div class="body">
+            <div class="head"></div>
+            <div class="middle">
+                <div class="wrapper">
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="icon"><img class="imgicon"></div>
+                        <div class="column">
+                            <div class="des">空白符卡</div>
+                            <div class="price">514p</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ava"><img src="SatoriKomeiji_1.webp"></div>
+            </div>
+            <div class="foot">
+                <div class="detail">对话框，介绍道具的功能</div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<style>
+@font-face {
+    font-family: GenJyuuGothic;
+    src: url('fonts/GenJyuuGothic-Normal-2.ttf');
+}
+@font-face {
+    font-family: JiangxiZK;
+    src: url('fonts/JiangxiZK.ttf');
+}
+@font-face {
+    font-family: KosugiMaru;
+    src: url('fonts/KosugiMaru-Regular.ttf');
+}
+.head {
+    height: 10px;
+}
+.body {
+    width: 680px;
+    background: #FFE4B5;
+    display: flex;
+    flex-direction: column;
+}
+.middle {
+    display: flex;
+    flex-direction: row;
+}
+.ava {
+    margin-top: auto;
+    width: 200px;
+    height: 400px;
+    text-align: center;
+}
+.ava img {
+    image-rendering: pixelated;
+    margin-left: -130px;
+    padding-bottom: 20px;
+    width: 200%;
+    object-fit: cover;
+    overflow: visible;
+    overflow-y: hidden;
+}
+.wrapper {
+    border-radius: 5px;
+    margin-left: 10px;
+    background: url('dockback.png');
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 460px;
+    justify-content: flex-start;
+    align-content: flex-start;
+    min-height: 450px;
+}
+.foot {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: -20px;
+    height:100px;
+    opacity: 0.9;
+    background: url('dialogue.png') no-repeat;
+    background-size: 100% 100%;
+}
+.detail {
+    color: white;
+    padding-top: 20px;
+    padding-left: 20px;
+}
+
+.item {
+    width: 200px;
+    height: 70px;
+    margin: 6px;
+    background: url('itemboard.png') no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.icon {
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 50px;
+    width: 70px;
+    border-right: 2px solid black;
+}
+.imgicon {
+    margin-left: 12px;
+    width: 50px; 
+    height: 50px;  
+    background: #fbefcb; 
+    border-radius: 50%/10%; 
+    text-align: center; 
+    text-indent: .1em; 
+}
+.column {
+    height: 70px;
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.des {
+    font-family: JiangxiZK;
+    font-size: 16px;
+    text-align: center;
+}
+.price {
+    font-family: JiangxiZK;
+    color: #b31c0d;
+    font-size: 12px;
+    text-align: center;
+}
+</style>

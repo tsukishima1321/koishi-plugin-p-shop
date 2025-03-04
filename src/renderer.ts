@@ -4,22 +4,22 @@ import path from 'path'
 import fs from 'fs'
 
 // 生成资源路径
-const fontGenJyuuGothic = path.resolve(__dirname, 'renderer/fonts/GenJyuuGothic-Normal-2.ttf').split('\\').join('/')
-const fontJiangxiZK = path.resolve(__dirname, 'renderer/fonts/JiangxiZK.ttf').split('\\').join('/')
-const fontKosugiMaru = path.resolve(__dirname, 'renderer/fonts/KosugiMaru-Regular.ttf').split('\\').join('/')
-const backItemboard = path.resolve(__dirname, 'renderer/itemboard.png').split('\\').join('/')
-const backDockback = path.resolve(__dirname, 'renderer/dockback.png').split('\\').join('/')
-const backDockBoard = path.resolve(__dirname, 'renderer/dockboard.png').split('\\').join('/')
-const imgSatoriKomeiji_1 = path.resolve(__dirname, 'renderer/SatoriKomeiji_1.webp').split('\\').join('/')
-const imgSatoriKomeiji_2 = path.resolve(__dirname, 'renderer/SatoriKomeiji_2.webp').split('\\').join('/')
-const imgDialogue = path.resolve(__dirname, 'renderer/dialogue.png').split('\\').join('/')
+const fontGenJyuuGothic = path.resolve(__dirname, '../renderer/fonts/GenJyuuGothic-Normal-2.ttf').split('\\').join('/')
+const fontJiangxiZK = path.resolve(__dirname, '../renderer/fonts/JiangxiZK.ttf').split('\\').join('/')
+const fontKosugiMaru = path.resolve(__dirname, '../renderer/fonts/KosugiMaru-Regular.ttf').split('\\').join('/')
+const backItemboard = path.resolve(__dirname, '../renderer/itemboard.png').split('\\').join('/')
+const backDockback = path.resolve(__dirname, '../renderer/dockback.png').split('\\').join('/')
+const backDockBoard = path.resolve(__dirname, '../renderer/dockboard.png').split('\\').join('/')
+const imgSatoriKomeiji_1 = path.resolve(__dirname, '../renderer/SatoriKomeiji_1.webp').split('\\').join('/')
+const imgSatoriKomeiji_2 = path.resolve(__dirname, '../renderer/SatoriKomeiji_2.webp').split('\\').join('/')
+const imgDialogue = path.resolve(__dirname, '../renderer/dialogue.png').split('\\').join('/')
 
 
 export const renderViewShop = async (pup: Puppeteer, items: ShopItem[], targetItem?: ShopItem): Promise<string> => {
     const itemsHtml = items.map((item) => {
-        let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        let icon = path.resolve(__dirname, '../renderer/itemicon/' + item.id + ".png")
         if (!fs.existsSync(icon)) {
-            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+            icon = path.resolve(__dirname, '../renderer/itemicon/blank.png')
         }
         const name = item.id
         const price = item.price
@@ -181,9 +181,9 @@ body {
 
 export const renderViewBag = async (pup: Puppeteer, items: UserItem[]): Promise<string> => {
     let itemsHTML = items.map((item) => {
-        let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+        let icon = path.resolve(__dirname, '../renderer/itemicon/' + item.id + ".png")
         if (!fs.existsSync(icon)) {
-            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+            icon = path.resolve(__dirname, '../renderer/itemicon/blank.png')
         }
         const itemName = item.id
         const price = item.price
@@ -311,9 +311,9 @@ img {
 }
 
 export const renderViewItem = async (pup: Puppeteer, item: UserItem, shopDes: string): Promise<string> => {
-    let icon = path.resolve(__dirname, 'renderer/itemicon/' + item.id + ".png")
+    let icon = path.resolve(__dirname, '../renderer/itemicon/' + item.id + ".png")
         if (!fs.existsSync(icon)) {
-            icon = path.resolve(__dirname, 'renderer/itemicon/blank.png')
+            icon = path.resolve(__dirname, '../renderer/itemicon/blank.png')
         }
     const itemName = item.id
     const price = item.price
