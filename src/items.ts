@@ -1,6 +1,10 @@
 // ==================== 道具配置 ====================
+import { Logger } from 'koishi'
 import { ShopItem } from './types'
-import { loadMemoryFile, writeMemoryFile } from './utils'
+import { loadMemoryFile, writeMemoryFile, decrypt } from './utils'
+import { log } from 'console'
+
+const logger = new Logger('p-shop')
 
 export const ITEMS: Record<string, ShopItem> = {
   '空白符卡': {
@@ -151,6 +155,26 @@ export const ITEMS: Record<string, ShopItem> = {
       user.p += item.price
       item.count--
       return '出售成功，你获得了' + item.price + 'P，为什么要这样做呢'
+    }
+  },
+  '地灵殿通行证': {
+    id: '地灵殿通行证',
+    price: 100,
+    maxStack: 1,
+    description: '使用自备api,参数为 [baseURL] [encryptedKey] [model]',
+    favorability: 0,
+    use: async ({user, item, args}, cfg) => {
+      const baseURL = args[0] ? args[0] : ''
+      const encryptedKey = args[1] ? args[1] : ''
+      const model = args[2] ? args[2] : ''
+      const secretKey = cfg.secretKey
+      const decryptedKey = decrypt(decrypt(encryptedKey, secretKey), user.userid)
+      logger.info(decryptedKey)
+      if (!baseURL || !decryptedKey || !model) return '请提供正确的参数'
+      item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
+      const status = item.description ? item.description : 'off'
+      item.description = status == 'on' ? 'off' : 'on'
+      return status == 'on' ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
     }
   }
 }

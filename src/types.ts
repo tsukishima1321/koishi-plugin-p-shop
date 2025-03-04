@@ -1,4 +1,5 @@
 import { Context } from 'koishi'
+import { Config } from '.'
 
 //记忆配置
 export interface MemoryEntry {
@@ -35,7 +36,7 @@ export interface ShopItem {
   metadata?: Record<string, any>
   buy?: (user: UserData, targetItem: ShopItem, amount: number, ctx: Context) => Promise<string | void>
   sell?: (user: UserData, price: number, amount: number, ctx: Context) => Promise<string | void>
-  use?: (ItemUsectx: ItemUseContext, ctx: Context) => Promise<string | void>
+  use?: (ItemUsectx: ItemUseContext,cfg: Config, ctx: Context) => Promise<string | void>
 }
 
 export interface ItemUseContext {

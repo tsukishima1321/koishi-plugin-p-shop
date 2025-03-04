@@ -15,7 +15,6 @@ export class ShopService {
   private db: DatabaseService
   private items: Record<string, ShopItem>
   private puppeteer: Puppeteer | null
-
   constructor(ctx: Context, config: Config) {
     this.db = new DatabaseService(ctx)
     this.puppeteer = ctx.puppeteer ? ctx.puppeteer : null
@@ -146,7 +145,7 @@ export class ShopService {
       user.p -= targetItem.price * amount
     }
     this.db.updateUser(user)
-    
+
     if (message) {
       return message
     } else {
@@ -183,7 +182,7 @@ export class ShopService {
   }
 
   // 使用道具
-  public async useItem(ctx: Context, userId: string, itemId: string, args: string[]): Promise<void | string> {
+  public async useItem(cfg: Config, ctx: Context, userId: string, itemId: string, args: string[]): Promise<void | string> {
     const user = await this.db.getUser(userId)
     if (!user) return '请先签到再使用物品哦'
     if (!user.items) return '背包为空'
@@ -192,7 +191,7 @@ export class ShopService {
     const userItem = user.items[itemId]
     const shopItem = this.items[itemId]
     try {
-      const message = await shopItem.use({ user, item: userItem, args }, ctx)
+      const message = await shopItem.use({ user, item: userItem, args }, cfg, ctx)
       if (userItem.count === 0) delete user.items[itemId]
       this.db.updateUser(user)
       if (message) return message
