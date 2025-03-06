@@ -193,9 +193,11 @@ export const renderViewBag = async (pup: Puppeteer, items: UserItem[]): Promise<
     <div class="icon"><img src="${icon}"></div>
     <div class="column">
         <div class="des">${itemName}</div>
-        <div class="price">${price}p</div>
+        <div class="row">
+            <div class="price">${price}p</div>
+            <div class="count">库存：<a>${count}</a></div>
+        </div>
     </div>
-    <div class="count">库存：<a>${count}</a></div>
 </div>`
         return itemHTML
     }).join('')
@@ -225,7 +227,7 @@ export const renderViewBag = async (pup: Puppeteer, items: UserItem[]): Promise<
     src: url('${fontKosugiMaru}');
 }
 body {
-    width: 420px;
+    width: 600px;
     min-height: 450px;
     display: inline-block;
 }
@@ -240,18 +242,17 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    width: 420px;
+    width: 600px;
     justify-content: flex-start;
     align-content: flex-start;
     min-height: 450px;
 }
 .item {
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 10px;
     margin-top: 6px;
     margin-bottom: 6px;
     border-radius: 2px;
-    width: 400px;
+    width: 280px;
     height: 70px;
     background: url('${backDockBoard}') no-repeat;
     background-size: 100% 100%;
@@ -277,15 +278,20 @@ img {
 }
 .column {
     height: 70px;
-    width: 240px;
+    width: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
 .des {
     font-family: JiangxiZK;
     padding-left: 5px;
-    font-size: 20px;
+    font-size: 18px;
 }
 .price {
     padding-left: 5px;
@@ -294,7 +300,7 @@ img {
     color: #b31c0d;
 }
 .count {
-    font-size: 16px;
+    font-size: 14px;
     margin-right: 10px;
     margin-left: auto;
     margin-top: auto;
@@ -312,9 +318,9 @@ img {
 
 export const renderViewItem = async (pup: Puppeteer, item: UserItem, shopDes: string): Promise<string> => {
     let icon = path.resolve(__dirname, '../renderer/itemicon/' + item.id + ".png")
-        if (!fs.existsSync(icon)) {
-            icon = path.resolve(__dirname, '../renderer/itemicon/blank.png')
-        }
+    if (!fs.existsSync(icon)) {
+        icon = path.resolve(__dirname, '../renderer/itemicon/blank.png')
+    }
     const itemName = item.id
     const price = item.price
     let description = shopDes.replace('\n', '<BR>')
