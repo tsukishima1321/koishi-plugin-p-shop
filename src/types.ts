@@ -14,6 +14,7 @@ export interface UserData {
   deadTime: Date
   exchangeTime: Date
   favorability: number
+  usage: number
   items?: Record<string, UserItem>
 }
 
