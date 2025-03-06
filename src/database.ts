@@ -23,6 +23,7 @@ export class DatabaseService {
       favorability: data.favorability,
       deadTime: data.deadTime,
       exchangeTime: data.exchangeTime,
+      usage: data.usage,
       items: data.items
     })
   }
@@ -37,6 +38,7 @@ export class DatabaseService {
       deadTime: 'date',
       exchangeTime: 'date',
       favorability: 'integer',
+      usage: 'integer',
       items: 'object'
     }, { autoInc: true })
   }

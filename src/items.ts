@@ -2,7 +2,6 @@
 import { Logger } from 'koishi'
 import { ShopItem } from './types'
 import { loadMemoryFile, writeMemoryFile, decrypt } from './utils'
-import { log } from 'console'
 
 const logger = new Logger('p-shop')
 
@@ -164,17 +163,54 @@ export const ITEMS: Record<string, ShopItem> = {
     description: '使用自备api,参数为 [baseURL] [encryptedKey] [model]',
     favorability: 0,
     use: async ({user, item, args}, cfg) => {
-      const baseURL = args[0] ? args[0] : ''
-      const encryptedKey = args[1] ? args[1] : ''
-      const model = args[2] ? args[2] : ''
-      const secretKey = cfg.secretKey
-      const decryptedKey = decrypt(decrypt(encryptedKey, secretKey), user.userid)
-      logger.info(decryptedKey)
-      if (!baseURL || !decryptedKey || !model) return '请提供正确的参数'
-      item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
+      if (!item.description) {
+        if (args.length < 3) return '请提供正确的参数'
+        const baseURL = args[0]
+        const encryptedKey = args[1]
+        const model = args[2]
+        const decryptedKey = decrypt(decrypt(encryptedKey, cfg.secretKey), user.userid)
+        item.metadata = { key: decryptedKey, model: model, baseURL: baseURL }
+      }
       const status = item.description ? item.description : 'off'
       item.description = status == 'on' ? 'off' : 'on'
+      user.usage = 9999
       return status == 'on' ? '已关闭地灵殿通行证' : '已开启地灵殿通行证'
     }
-  }
+  },
+  '提神布丁': {
+    id: '提神布丁',
+    price: 9999,
+    maxStack: 1,
+    description: '使用后获得30次对话额度，当天有效',
+    favorability: 0,
+    use: async ({ user, item }) => {
+      user.usage -= 30
+      item.count--
+      return '使用成功，你获得了30次对话额度，当天有效'
+    }
+  },
+  '草莓大福': {
+    id: '草莓大福',
+    price: 12345,
+    maxStack: 10,
+    description: '使用后增加10点好感度',
+    favorability: 0,
+    use: async ({ user, item }) => {
+      user.favorability += 10
+      item.count--
+      return '谢谢你的礼物，好感↑'
+    }
+  },
+  '情侣合照': {
+    id: '情侣合照',
+    price: 520,
+    maxStack: 1,
+    description: '背面写着名字，使用后获得专属昵称（你的和觉的）',
+    favorability: 1500,
+    use: async ({ item, args }) => {
+      if (args.length < 2) return '请提供两个昵称'
+      item.metadata = { userNickName: args[0], botNickName: args[1] }
+      return '好的' + args[0] + '，以后叫我' + args[1] + '吧'
+    }
+  },
 }
